@@ -4,12 +4,60 @@
       <div class="avatar_box">
         <img src="../assets/logo.png" alt="" />
       </div>
+      <el-form label-width="0px" class="login_form" :rules="rules" :model="ruleForm" ref="ruleForm">
+        <!-- 用户名 -->
+        <el-form-item prop="username">
+          <el-input prefix-icon="iconfont icon-user" v-model="ruleForm.username"></el-input>
+        </el-form-item>
+        <!-- 密码 -->
+        <el-form-item prop="password">
+          <el-input prefix-icon="iconfont icon-3702mima" v-model="ruleForm.password"></el-input>
+        </el-form-item>
+        <!-- 按钮 -->
+        <el-form-item class="btns">
+          <el-button type="primary" @click="login('ruleForm')">登录</el-button>
+          <el-button type="info" @click="resetForm('ruleForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      ruleForm: {
+        username: 'admin',
+        password: '123456'
+      },
+      rules: {
+        name: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    },
+    login(formName) {
+      this.$refs[formName].validate(async (flag) => {
+        if (!flag) return this.$message.error('失败')
+        const { data: res } = await this.$http.post('/login', this.ruleForm)
+        if (res.meta.status !== 200) return this.$message(res.meta.msg)
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
+      })
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -44,5 +92,12 @@ export default {}
       background-color: #eee;
     }
   }
+}
+.login_form {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 </style>
