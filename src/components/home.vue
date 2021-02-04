@@ -10,14 +10,14 @@
     <el-container>
       <el-aside :width="isCollapse ? '64px' : '200px'">
         <div class="toggle-button" @click="toggleCollapse">|||</div>
-        <el-menu default-active="2" background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse-transition="false" :collapse="isCollapse">
+        <el-menu default-active="2" background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse-transition="false" :collapse="isCollapse" router>
           <!-- 一级菜单 -->
-          <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
+          <el-submenu :index="'/' + item.path" v-for="item in menuList" :key="item.id">
             <template slot="title">
               <i :class="iconsObj[item.id]"></i>
               <span>{{ item.authName }}</span>
             </template>
-            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 {{ subItem.authName }}
@@ -26,7 +26,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
