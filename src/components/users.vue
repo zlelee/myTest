@@ -32,7 +32,7 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <!-- 编辑 -->
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditUser(scope.row.id)"></el-button>
               <!-- 删除 -->
               <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
               <!-- 分配角色 -->
@@ -66,6 +66,24 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addFormDialog = false">取 消</el-button>
         <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 编辑用户对话框 -->
+    <el-dialog title="编辑用户" :visible.sync="editFormDialog" width="30%" @close="editDialogClosed">
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editFormDialog = false">取 消</el-button>
+        <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -117,7 +135,25 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
+      },
+      //编辑用户对话框
+      editFormDialog: false,
+      editForm: {
+        username: '',
+        email: '',
+        mobile: ''
+      },
+      editFormRules: {
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
       }
+      //删除用户
     }
   },
 
@@ -156,6 +192,28 @@ export default {
         this.getUserList()
         this.addFormDialog = false
       })
+    },
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+    editUser() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('users/' + this.editForm.id, {
+          email: this.editForm.email,
+          mobile: this.editForm.mobile
+        })
+        if (res.meta.status !== 200) return this.$message.error('修改用户信息失败')
+        this.$message.success('修改用户信息成功')
+        this.getUserList()
+        this.editFormDialog = false
+      })
+    },
+    async showEditUser(id) {
+      const { data: res } = await this.$http.get('users/' + id)
+      if (res.meta.status !== 200) return this.$message.error('获取用户信息失败')
+      this.editForm = res.data
+      this.editFormDialog = true
     }
   },
   created() {
