@@ -34,7 +34,7 @@
               <!-- 编辑 -->
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditUser(scope.row.id)"></el-button>
               <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(scope.row.id)"></el-button>
               <!-- 分配角色 -->
               <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
                 <el-button type="warning" size="mini" icon="el-icon-setting"></el-button>
@@ -214,6 +214,18 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('获取用户信息失败')
       this.editForm = res.data
       this.editFormDialog = true
+    },
+    async deleteUser(id) {
+      const result = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch((err) => err)
+      if (result !== 'confirm') return this.$message.info('已取消删除')
+      const { data: res } = await this.$http.delete('users/' + id)
+      if (res.meta.status !== 200) return this.$message.error('删除用户失败')
+      this.$message.success('删除用户成功')
+      this.getUserList()
     }
   },
   created() {
