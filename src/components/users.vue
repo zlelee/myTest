@@ -17,6 +17,32 @@
           <el-button type="primary">添加用户</el-button>
         </el-col>
       </el-row>
+      <el-row>
+        <el-table :data="userlist" style="width: 100%" stripe border>
+          <el-table-column type="index"></el-table-column>
+          <el-table-column prop="username" label="姓名"> </el-table-column>
+          <el-table-column prop="email" label="邮箱"> </el-table-column>
+          <el-table-column prop="mobile" label="电话"> </el-table-column>
+          <el-table-column prop="role_name" label="角色"> </el-table-column>
+          <el-table-column prop="type" label="状态">
+            <template slot-scope="scope">
+              <el-switch v-model="scope.row.mg_state"> </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <!-- 编辑 -->
+              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <!-- 删除 -->
+              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+              <!-- 分配角色 -->
+              <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+                <el-button type="warning" size="mini" icon="el-icon-setting"></el-button>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
     </el-card>
   </div>
 </template>
@@ -42,7 +68,7 @@ export default {
         params: this.queryInfo
       })
       if (res.meta.status !== 200) this.$message.error('获取用户列表失败')
-      this.userlist = res.data
+      this.userlist = res.data.users
     }
   },
   mounted() {
@@ -51,4 +77,8 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.el-table {
+  margin: 20px 0;
+}
+</style>
