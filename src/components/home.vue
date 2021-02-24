@@ -118,4 +118,7 @@ export default {
   letter-spacing: 0.2em;
   cursor: pointer;
 }
+.el-menu {
+  border-right: 0 !important;
+}
 </style>

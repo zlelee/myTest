@@ -26,7 +26,7 @@
           <el-table-column prop="role_name" label="角色"> </el-table-column>
           <el-table-column prop="type" label="状态">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.mg_state"> </el-switch>
+              <el-switch v-model="scope.row.mg_state" @change="changeStutas(scope.row)"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -268,6 +268,15 @@ export default {
       this.$message.success('设置角色成功')
       this.getUserList()
       this.setRoleDialogVisible = false
+    },
+    async changeStutas(userInfo) {
+      const status = userInfo.mg_state
+      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${status}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改用户状态失败')
+      }
+      this.$message.success('修改用户状态成功')
+      this.getUserList()
     }
   },
   created() {
